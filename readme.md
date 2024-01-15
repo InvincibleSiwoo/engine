@@ -1,5 +1,5 @@
-# engine
+# PB3D
 
-This is pre-test of engine.
+This is proto-type engine.
 
 Thank you for your interest!
