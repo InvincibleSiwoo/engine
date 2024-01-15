@@ -1,13 +1,14 @@
 import pygame
 from pygame.locals import *
-from OpenGL.GL import glTranslatef, glClear, glRotatef, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glOrtho
+from OpenGL.GL import glTranslatef, glClear, glRotatef, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glOrtho, glClearColor
 from OpenGL.GLU import gluPerspective
 
-def init(size: tuple[int, int]):
+def init(size: tuple[int, int], color: tuple[int, int, int, int]):
     pygame.init()
     pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
     gluPerspective(45, (size[0] / size[1]), 0.1, 50.0)
     glTranslatef(0.0, 0.0, -5)
+    glClearColor(*color)
 
 def init_2d(size: tuple[int, int]):
     pygame.init()
