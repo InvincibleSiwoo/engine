@@ -1,6 +1,6 @@
 from OpenGL.GLU import *
 from pywavefront import Wavefront
-from PB3D.math.vector import Vec3
+from PB3D.math import Vec3, RGB
 
 entities = []
 
@@ -16,7 +16,7 @@ def mouse_pos(x, y):
     return click_pos
 
 class Shape:
-    def __init__(self, file_path="cube", color=None, position=Vec3(0, 0, 0)):
+    def __init__(self, file_path="cube", color=RGB(1, 1, 1), position=Vec3(0, 0, 0)):
         self.file_path = file_path
         self.color = color
         self.position = position
@@ -57,9 +57,9 @@ class Shape:
             for vertex_i in surface:
                 vertex = self.vertices[vertex_i]
                 if self.selected:
-                    glColor3fv((1, 0, 0))  # Red if selected
+                    glColor3fv((1, 0, 0))
                 elif self.color:
-                    glColor3fv(self.color)
+                    glColor3fv(self.color.red, self.color.green, self.color.blue)
                 glVertex3fv(vertex)
         glEnd()
 
@@ -67,9 +67,9 @@ class Shape:
         glEnable(GL_DEPTH_TEST)
 
         if self.selected:
-            glColor3fv((1, 0, 0))  # Red if selected
+            glColor3fv((1, 0, 0))
         elif self.color:
-            glColor3fv(self.color)
+            glColor3fv(self.color.red, self.color.green, self.color.blue)
 
         glBegin(GL_TRIANGLES)
         for face in self.obj_mesh.mesh_list[0].faces:
