@@ -3,12 +3,19 @@ from pygame.locals import *
 from OpenGL.GL import glTranslatef, glClear, glRotatef, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glOrtho, glClearColor
 from OpenGL.GLU import gluPerspective
 
+from OpenGL.GL import glEnable, GL_DEPTH_TEST
+
+
 def init(size: tuple[int, int], color: tuple[int, int, int, int]):
     pygame.init()
     pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
+
+    glEnable(GL_DEPTH_TEST)
+
     gluPerspective(45, (size[0] / size[1]), 0.1, 50.0)
     glTranslatef(0.0, 0.0, -5)
     glClearColor(*color)
+
 
 def init_2d(size: tuple[int, int]):
     pygame.init()
@@ -32,7 +39,7 @@ def loop(func1=None, func2=None):
                 pygame.quit()
                 quit()
             if func2 != None:
-                func2()
+                func2(event)
 
         if func1 != None:
             func1()

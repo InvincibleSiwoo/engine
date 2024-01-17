@@ -1,6 +1,7 @@
 from OpenGL.GLU import *
 from pywavefront import Wavefront
 from PB3D.math import Vec3, RGB
+from OpenGL.GL import *
 
 entities = []
 
@@ -52,24 +53,26 @@ class Shape:
         glPopMatrix()
 
     def draw_cube(self):
+        glPushMatrix()
+        glTranslatef(self.position.x, self.position.y, self.position.z)
+
+        if self.color:
+            glColor3fv((self.color.red, self.color.green, self.color.blue))
+
         glBegin(GL_QUADS)
         for surface in ((0, 1, 2, 3), (3, 2, 7, 6), (4, 5, 1, 0), (1, 5, 7, 2), (4, 0, 3, 6)):
             for vertex_i in surface:
                 vertex = self.vertices[vertex_i]
-                if self.selected:
-                    glColor3fv((1, 0, 0))
-                elif self.color:
-                    glColor3fv(self.color.red, self.color.green, self.color.blue)
                 glVertex3fv(vertex)
         glEnd()
 
-    def draw_obj(self):
-        glEnable(GL_DEPTH_TEST)
+        glPopMatrix()
 
+    def draw_obj(self):
         if self.selected:
             glColor3fv((1, 0, 0))
         elif self.color:
-            glColor3fv(self.color.red, self.color.green, self.color.blue)
+            glColor3fv((self.color.red, self.color.green, self.color.blue))
 
         glBegin(GL_TRIANGLES)
         for face in self.obj_mesh.mesh_list[0].faces:
@@ -77,8 +80,6 @@ class Shape:
                 vertex = self.obj_mesh.mesh_list[0].vertices[vertex_i]
                 glVertex3fv(vertex)
         glEnd()
-
-        glDisable(GL_DEPTH_TEST)
 
     def is_clicked(self, click_pos):
         if self.obj_mesh:
@@ -171,7 +172,6 @@ class Shape2d:
     def move(self, x, y):
         self.position = (self.position[0] + x, self.position[1] + y)
 
-from OpenGL.GL import *
 
 class Light:
     def __init__(self, position=(0, 0, 0), ambient=1, diffuse=1, specular=1):

@@ -2,9 +2,9 @@ import colorsys
 
 class RGB:
     def __init__(self, red, green, blue):
-        self.red = red
-        self.green = green
-        self.blue = blue
+        self.red = red/255
+        self.green = green/255
+        self.blue = blue/255
 
     def hsv(self):
         rgb = colorsys.rgb_to_hsv(self.red, self.green, self.blue)
