@@ -1,11 +1,18 @@
 from OpenGL.GLU import *
 from pywavefront import Wavefront
 from PB3D.math import Vec3, RGB
+from PB3D.math.vector import BaseVec3
 from OpenGL.GL import *
 
 entities = []
 
 def mouse_pos(x, y):
+    """
+    This is a function that obtains the mouse click entity in PB3D.
+    :param x:
+    :param y:
+    :return:
+    """
     global selected_shape
     viewport = glGetIntegerv(GL_VIEWPORT)
     modelview = glGetDoublev(GL_MODELVIEW_MATRIX)
@@ -17,7 +24,10 @@ def mouse_pos(x, y):
     return click_pos
 
 class Shape:
-    def __init__(self, file_path="cube", color=RGB(1, 1, 1), position=Vec3(0, 0, 0)):
+    """
+    This is a class that displays the basic shapes of PB3D. This class supports color, position, etc. and also has an obj file loading function.
+    """
+    def __init__(self, file_path="cube", color=RGB(1, 1, 1), position=BaseVec3(0, 0, 0)):
         self.file_path = file_path
         self.color = color
         self.position = position
@@ -26,6 +36,7 @@ class Shape:
             self.load_obj(file_path)
             self.draw()
         elif file_path == "cube":
+            self.obj_mesh = None
             self.vertices = [
                 (1 + self.position.x, -1 + self.position.y, -1 + self.position.z),
                 (1 + self.position.x, 1 + self.position.y, -1 + self.position.z),
@@ -108,13 +119,15 @@ class Shape:
         elif isinstance(position, Vec3):
             self.position = position
 
-    def move(self, x, y, z):
+    def move(self, pos: Vec3):
+        """
+        This is the method responsible for the position movement function of the Shape.
+        :param pos:
+        :return:
+        """
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        glTranslatef(x, y, z)
+        self.position += pos
 
         if self.file_path and self.file_path.endswith(".obj"):
             self.load_obj(self.file_path)
@@ -131,7 +144,14 @@ class Shape:
             ]
             self.draw_cube()
 
+    def loop(self):
+        Shape(color=self.color, position=self.position, file_path=self.file_path)
+
 class Shape2d:
+    """
+    *** caution! This does not add any new features in version 0.0.3. ***
+    This is a class that represents 2d entities in PB3D.
+    """
     def __init__(self, file_path="square", color=None, position=(0, 0)):
         self.file_path = file_path
         self.color = color
@@ -174,6 +194,10 @@ class Shape2d:
 
 
 class Light:
+    """
+    *** caution! This is not a complete feature yet. ***
+    This is a class that represents light in PB3D.
+    """
     def __init__(self, position=(0, 0, 0), ambient=1, diffuse=1, specular=1):
         self.position = position
         self.ambient = [ambient, ambient, ambient, 1.0]
