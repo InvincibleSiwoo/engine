@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from OpenGL.GL import glTranslatef, glClear, glRotatef, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glOrtho, glClearColor
+from OpenGL.GL import *
 from OpenGL.GLU import gluPerspective
 from PB3D.math import Vec4
 
@@ -24,6 +24,11 @@ def init(size: tuple[int, int], color: tuple[int, int, int, int]):
     glTranslatef(0.0, 0.0, -5)
     glClearColor(*color)
 
+    print("\nOpenGL Version:", glGetString(GL_VERSION))
+    print("OpenGL Vendor:", glGetString(GL_VENDOR))
+    print("OpenGL Renderer:", glGetString(GL_RENDERER))
+    print("\nVersion 0.0.3")
+
 
 def init_2d(size: tuple[int, int]):
     """
@@ -34,6 +39,11 @@ def init_2d(size: tuple[int, int]):
     pygame.init()
     pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
     glOrtho(0, size[0], size[1], 0, -1, 1)
+
+    print("\nOpenGL Version:", glGetString(GL_VERSION))
+    print("OpenGL Vendor:", glGetString(GL_VENDOR))
+    print("OpenGL Renderer:", glGetString(GL_RENDERER))
+    print("\nVersion 0.0.3")
 
 def update():
     pygame.display.flip()
