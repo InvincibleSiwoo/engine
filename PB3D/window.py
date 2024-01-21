@@ -3,10 +3,14 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import gluPerspective
 from PB3D.math import Vec4
-
 from OpenGL.GL import glEnable, GL_DEPTH_TEST
+from numba import jit, NumbaWarning
+import warnings
+
+warnings.filterwarnings("ignore", category=NumbaWarning)
 
 
+@jit
 def init(size: tuple[int, int], color: tuple[int, int, int, int]):
     """
     This is a function that initializes the 3d mode of PB3D. Here you can adjust the color and size.
@@ -29,7 +33,7 @@ def init(size: tuple[int, int], color: tuple[int, int, int, int]):
     print("OpenGL Renderer:", glGetString(GL_RENDERER))
     print("\nVersion 0.0.3")
 
-
+@jit
 def init_2d(size: tuple[int, int]):
     """
     This is a function that initializes the 2d mode of PB3D. Here you can adjust the color and size.
@@ -45,12 +49,15 @@ def init_2d(size: tuple[int, int]):
     print("OpenGL Renderer:", glGetString(GL_RENDERER))
     print("\nVersion 0.0.3")
 
+@jit
 def update():
     pygame.display.flip()
 
+@jit
 def clean():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+@jit
 def turn(vec: Vec4):
     """
     This is the function responsible for adjusting the field of view in PB3D
@@ -59,7 +66,7 @@ def turn(vec: Vec4):
     """
     glRotatef(vec.w, vec.x, vec.y, vec.z)
 
-
+@jit
 def loop(func1=None, func2=None):
     """
     This is a function that manages loops in PB3D. Basically, you can install a model in func1 and use the keyboard in func2.

@@ -23,6 +23,6 @@ class HSV:
         self.value = value
 
 
-def rgb(self):
-    rgb = colorsys.hsv_to_rgb(self.hue / 360, self.saturation, self.value)
-    return RGB(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255)
+    def rgb(self):
+        rgb = colorsys.hsv_to_rgb(self.hue / 360, self.saturation, self.value)
+        return RGB(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255)
