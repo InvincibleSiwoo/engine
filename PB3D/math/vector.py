@@ -131,5 +131,29 @@ class Vec4:
         norm = np.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2 + self.w ** 2)
         return Vec4(self.x / norm, self.y / norm, self.z / norm, self.w / norm)
 
-    def __truediv__(self, scalar):
-        return Vec4(self.x / scalar, self.y / scalar, self.z / scalar, self.w / scalar)
+    def __truediv__(self, other):
+        try:
+            x = self.x / other.x
+        except:
+            x = 0
+
+        try:
+            y = self.y / other.y
+        except:
+            y = 0
+
+        try:
+            z = self.z / other.z
+        except:
+            z = 0
+
+        try:
+            w = self.w / other.w
+        except:
+            w = 0
+
+        return Vec4(x, y, z, w)
+
+i = Vec4(0, 1, 0, 0)
+j = Vec4(0, 0, 1, 0)
+k = Vec4(0, 0, 0, 1)

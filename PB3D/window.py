@@ -2,7 +2,8 @@ import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import gluPerspective
-from PB3D.math import Vec4
+from PB3D.math import Vec4, RGB
+from PB3D.entity import entities
 from OpenGL.GL import glEnable, GL_DEPTH_TEST
 from numba import jit, NumbaWarning
 import warnings
@@ -11,7 +12,7 @@ warnings.filterwarnings("ignore", category=NumbaWarning)
 
 
 @jit
-def init(size: tuple[int, int], color: tuple[int, int, int, int]):
+def init(size: tuple[int, int], color: RGB):
     """
     This is a function that initializes the 3d mode of PB3D. Here you can adjust the color and size.
 
@@ -26,7 +27,7 @@ def init(size: tuple[int, int], color: tuple[int, int, int, int]):
 
     gluPerspective(45, (size[0] / size[1]), 0.1, 50.0)
     glTranslatef(0.0, 0.0, -5)
-    glClearColor(*color)
+    glClearColor(color.red, color.green, color.blue, 1)
 
     print("\nOpenGL Version:", glGetString(GL_VERSION))
     print("OpenGL Vendor:", glGetString(GL_VENDOR))
@@ -85,6 +86,10 @@ def loop(func1=None, func2=None):
         clean()
         if func1 != None:
             func1()
+
+        for entity in entities:
+            entity.draw()
+
         update()
 
 Event = pygame.event.Event
