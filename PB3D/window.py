@@ -1,14 +1,26 @@
+import sys
+
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import gluPerspective
 from PB3D.math import Vec4, RGB
-from PB3D.entity import entities
+from PB3D.entity import entities, delete
 from OpenGL.GL import glEnable, GL_DEPTH_TEST
 from numba import jit, NumbaWarning
 import warnings
 
 warnings.filterwarnings("ignore", category=NumbaWarning)
+
+
+def change_color(color: RGB):
+    glClearColor(color.red, color.green, color.blue, 1)
+
+class Window:
+    def __init__(self, size: tuple[int, int], color: RGB):
+        self.width = size[0]
+        self.height = size[1]
+        self.color = color
 
 
 @jit
@@ -33,6 +45,8 @@ def init(size: tuple[int, int], color: RGB):
     print("OpenGL Vendor:", glGetString(GL_VENDOR))
     print("OpenGL Renderer:", glGetString(GL_RENDERER))
     print("\nVersion 0.0.3")
+
+    return Window(size, color)
 
 @jit
 def init_2d(size: tuple[int, int]):
@@ -68,7 +82,7 @@ def turn(vec: Vec4):
     glRotatef(vec.w, vec.x, vec.y, vec.z)
 
 @jit
-def loop(func1=None, func2=None):
+def loop(func1=None, func2=None, func3=None):
     """
     This is a function that manages loops in PB3D. Basically, you can install a model in func1 and use the keyboard in func2.
     :param func1:
@@ -83,12 +97,21 @@ def loop(func1=None, func2=None):
             if event.type == pygame.KEYDOWN:
                 if func2 != None:
                     func2(event)
+
+            if event.type == pygame.MOUSEMOTION:
+                dx, dy = event.rel
+                if func3 != None:
+                    func3(dx, dy)
+
         clean()
         if func1 != None:
             func1()
 
         for entity in entities:
             entity.draw()
+
+            if entity.position.size > round(sys.maxsize / 8):
+                delete(entity)
 
         update()
 

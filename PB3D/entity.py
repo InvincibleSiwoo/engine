@@ -3,7 +3,6 @@ from pywavefront import Wavefront
 from PB3D.math import Vec3, RGB
 from PB3D.math.vector import BaseVec3
 from OpenGL.GL import *
-
 entities = []
 
 def mouse_pos(x, y):
@@ -22,6 +21,8 @@ def mouse_pos(x, y):
     click_pos = gluUnProject(x, y, 0.0, modelview, projection, viewport)
 
     return click_pos
+
+
 
 class PositionEntity:
     def __init__(self, position=BaseVec3(0, 0, 0)):
@@ -62,10 +63,66 @@ class Entity(MathEntity):
         self.selected = False
 
         if file_path and file_path.endswith(".obj"):
-            self.load_obj(file_path)
-            self.draw()
+            try:
+                self.load_obj(file_path)
+            except FileNotFoundError:
+                self.obj_mesh = None
+                self.vertices = [
+                    (1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z),
+                    (1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z)
+                ]
+
         elif file_path == "cube":
             self.obj_mesh = None
+
+        self.draw()
+        entities.append(self)
+
+    def load_obj(self, file_path):
+        self.obj_mesh = Wavefront(file_path)
+
+    def draw(self):
+        glPushMatrix()
+        glTranslatef(self.position.x, self.position.y, self.position.z)
+
+        try:
+            if self.obj_mesh:
+                self.draw_obj()
+            else:
+                self.vertices = [
+                    (1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     -1 * self.scale + self.position.z),
+                    (1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z),
+                    (1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, -1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z),
+                    (-1 * self.scale + self.position.x, 1 * self.scale + self.position.y,
+                     1 * self.scale + self.position.z)
+                ]
+                self.draw_cube()
+        except AttributeError:
             self.vertices = [
                 (1 * self.scale + self.position.x, -1 * self.scale + self.position.y, -1 * self.scale + self.position.z),
                 (1 * self.scale + self.position.x, 1 * self.scale + self.position.y, -1 * self.scale + self.position.z),
@@ -76,19 +133,6 @@ class Entity(MathEntity):
                 (-1 * self.scale + self.position.x, -1 * self.scale + self.position.y, 1 * self.scale + self.position.z),
                 (-1 * self.scale + self.position.x, 1 * self.scale + self.position.y, 1 * self.scale + self.position.z)
             ]
-            self.draw_cube()
-        entities.append(self)
-
-    def load_obj(self, file_path):
-        self.obj_mesh = Wavefront(file_path)
-
-    def draw(self):
-        glPushMatrix()
-        glTranslatef(self.position.x, self.position.y, self.position.z)
-
-        if self.obj_mesh:
-            self.draw_obj()
-        else:
             self.draw_cube()
 
         glPopMatrix()
@@ -103,8 +147,11 @@ class Entity(MathEntity):
         glBegin(GL_QUADS)
         for surface in ((0, 1, 2, 3), (3, 2, 7, 6), (4, 5, 1, 0), (1, 5, 7, 2), (4, 0, 3, 6)):
             for vertex_i in surface:
-                vertex = self.vertices[vertex_i]
-                glVertex3fv(vertex)
+                try:
+                    vertex = self.vertices[vertex_i]
+                    glVertex3fv(vertex)
+                except:
+                    pass
         glEnd()
 
         glPopMatrix()
@@ -173,6 +220,12 @@ class Entity(MathEntity):
                 (-1 * self.scale + self.position.x, 1 * self.scale + self.position.y, 1 * self.scale + self.position.z)
             ]
             self.draw_cube()
+
+def delete(entity: Entity):
+    entity.position = Vec3(0, 0, 0)
+    entity.scale = 0
+    entity.vertices = []
+    del entity
 
 class Shape2d:
     """

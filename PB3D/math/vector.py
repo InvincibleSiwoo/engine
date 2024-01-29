@@ -1,5 +1,4 @@
 import math
-import numpy as np
 
 class BaseVec3:
     """
@@ -108,52 +107,80 @@ class Vec4:
         return f"Vec4({self.x}, {self.y}, {self.z}, {self.w})"
 
     def __add__(self, other):
-        return Vec4(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
+        if isinstance(other, Vec4):
+            return Vec4(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
+        elif isinstance(other, (int, float)):
+            return Vec4(self.x + other, self.y + other, self.z + other, self.w + other)
+        else:
+            raise TypeError("Unsupported operand type for +: Vec4 and {}".format(type(other)))
 
     def __sub__(self, other):
-        return Vec4(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
+        if isinstance(other, Vec4):
+            return Vec4(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
+        elif isinstance(other, (int, float)):
+            return Vec4(self.x - other, self.y - other, self.z - other, self.w - other)
+        else:
+            raise TypeError("Unsupported operand type for -: Vec4 and {}".format(type(other)))
 
     def __mul__(self, other):
-        a1, b1, c1, d1 = self.x, self.y, self.z, self.w
-        a2, b2, c2, d2 = other.x, other.y, other.z, other.w
+        if isinstance(other, Vec4):
+            a1, b1, c1, d1 = self.x, self.y, self.z, self.w
+            a2, b2, c2, d2 = other.x, other.y, other.z, other.w
 
-        a = a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2
-        b = a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2
-        c = a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2
-        d = a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2
+            a = a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2
+            b = a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2
+            c = a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2
+            d = a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2
 
-        return Vec4(a, b, c, d)
+            return Vec4(a, b, c, d)
+        elif isinstance(other, (int, float)):
+            return Vec4(self.x * other, self.y * other, self.z * other, self.w * other)
+        else:
+            raise TypeError("Unsupported operand type for *: Vec4 and {}".format(type(other)))
 
     def conjugate(self):
         return Vec4(self.x, -self.y, -self.z, -self.w)
 
     def normalize(self):
-        norm = np.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2 + self.w ** 2)
-        return Vec4(self.x / norm, self.y / norm, self.z / norm, self.w / norm)
+        norm = (self.x ** 2 + self.y ** 2 + self.z ** 2 + self.w ** 2) ** 0.5
+        if norm == 0:
+            return Vec4(0, 0, 0, 0)
+        else:
+            return Vec4(self.x / norm, self.y / norm, self.z / norm, self.w / norm)
 
     def __truediv__(self, other):
-        try:
-            x = self.x / other.x
-        except:
-            x = 0
+        if isinstance(other, Vec4):
+            try:
+                x = self.x / other.x
+            except ZeroDivisionError:
+                x = 0
 
-        try:
-            y = self.y / other.y
-        except:
-            y = 0
+            try:
+                y = self.y / other.y
+            except ZeroDivisionError:
+                y = 0
 
-        try:
-            z = self.z / other.z
-        except:
-            z = 0
+            try:
+                z = self.z / other.z
+            except ZeroDivisionError:
+                z = 0
 
-        try:
-            w = self.w / other.w
-        except:
-            w = 0
+            try:
+                w = self.w / other.w
+            except ZeroDivisionError:
+                w = 0
 
-        return Vec4(x, y, z, w)
+            return Vec4(x, y, z, w)
+        elif isinstance(other, (int, float)):
+            if other != 0:
+                return Vec4(self.x / other, self.y / other, self.z / other, self.w / other)
+            else:
+                raise ZeroDivisionError("division by zero")
+        else:
+            raise TypeError("Unsupported operand type for /: Vec4 and {}".format(type(other)))
 
-i = Vec4(0, 1, 0, 0)
-j = Vec4(0, 0, 1, 0)
-k = Vec4(0, 0, 0, 1)
+i = Vec4(1, 0, 0, 0)
+j = Vec4(0, 1, 0, 0)
+k = Vec4(0, 0, 1, 0)
+
+r = Vec4(0, 0, 0, 1)
